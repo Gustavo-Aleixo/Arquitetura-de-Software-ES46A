@@ -1,6 +1,6 @@
 import AbstractFormater from './AbstractFormater.js';
 
-export default class FormaterHTML extends AbstractFormater {
+export default class FormaterHTML2 extends AbstractFormater {
 
   output (cities) {
     let html = `
@@ -11,20 +11,26 @@ export default class FormaterHTML extends AbstractFormater {
       <title>Relatório de Nomes de Cidades</title>
     </head>
     <body>
-      <h1>Relatório de Nomes de Cidades</h1>
-      <ul>
-  `;
+      <header>
+        <h1>Relatório de Nomes de Cidades</h1>
+      </header>
+      <main>
+        <ul>
+`;
 
     for (let i = 0; i < cities.length; i++) {
-      html += `     <li>${cities[i]['Nome']}</li>\n`;
+      html += `          <li><span class="cidade">${cities[i]['Nome']}</span></li>`;
+      if (i < cities.length - 1) {
+        html += '\n';
+      }
     }
 
     html += `
-      </ul>
+        </ul>
+      </main>
     </body>
-  </html>`;
+  </html>\n`;
 
     return html;
   }
-
 }

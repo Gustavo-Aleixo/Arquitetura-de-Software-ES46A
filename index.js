@@ -1,26 +1,54 @@
-import sys from 'node:sys';
+import readline from 'node:readline';
+import GenerateReportCommand from './src/GenerateReportCommand.js';
+import Facade from './src/Facade.js';
+import FormaterFactory from './src/FormaterFactory.js';
+import FileReader from './src/FileReader.js';
+import JsonParser from './src/JsonParser.js';
 
-import FormaterHTML from './src/FormaterHTML.js';
-import FormaterTXT from './src/FormaterTXT.js';
-import CitiesReporter from './src/CitiesReporter.js';
+let formaterFactory = new FormaterFactory();
+let fileReader = new FileReader();
+let jsonParser = new JsonParser();
 
-const [cmd, script, param1] = process.argv,
-      filename = './data/cidades-2.json';
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
-const formaterStrategies = {
-  'html': new FormaterHTML(),
-  'txt': new FormaterTXT()
-};
+function exibirMenu() {
+  console.log('\n\n=========== Menu ===========');
+  console.log('1. Relatório em Texto');
+  console.log('2. Relatório em HTML - Tipo 1');
+  console.log('3. Relatório em HTML - Tipo 2');
+  console.log('4. Sair');
+  console.log('============================');
+  process.stdout.write('Digite sua opção: ');
+}
 
-let reporter = new CitiesReporter({
-      formaterStrategy: formaterStrategies[param1]
-    }),
-    output = reporter.report(filename);
-
-console.log(output);
-
-
-
-
-
-
+exibirMenu();
+rl.on('line', (input) => {
+  let facade, command;
+  switch(input.trim()) {
+    case '1':
+      facade = new Facade('txt', formaterFactory, fileReader, jsonParser);
+      command = new GenerateReportCommand(facade);
+      break;
+    case '2':
+      facade = new Facade('html1', formaterFactory, fileReader, jsonParser);
+      command = new GenerateReportCommand(facade);
+      break;
+    case '3':
+      facade = new Facade('html2', formaterFactory, fileReader, jsonParser);
+      command = new GenerateReportCommand(facade);
+      break;
+    case '4':
+      rl.close();
+      return;
+    default:
+      console.log('\nOpção inválida. Por favor, escolha uma opção do menu.');
+      exibirMenu();
+      return;
+  }
+  const output = command.execute();
+  console.log(output);
+  exibirMenu();
+});
